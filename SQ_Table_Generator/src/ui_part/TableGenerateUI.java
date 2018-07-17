@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -36,7 +37,7 @@ public class TableGenerateUI{
 	      
 	      //显示部分
 	      JPanel panel = new JPanel();
-	      text = new JTextArea(50,120);
+	      text = new JTextArea(50,100);
 	      text.setLineWrap(true);
 	       
 	      JScrollPane scroller = new JScrollPane(text);
@@ -48,19 +49,21 @@ public class TableGenerateUI{
 	      
 	      //输入部分
 	      JPanel panelInput = new JPanel();
-	      final JTextField rowText = new JTextField(5);
-	      final JTextField columnText = new JTextField(5);
-	      panelInput.setLayout(new GridLayout(2, 1));
+	      final JTextField rowText = new JTextField(8);
+	      final JTextField columnText = new JTextField(8);
+	      panelInput.setLayout(new GridLayout(1, 2));
 	      //设置字体
-	      JLabel jl1 = new JLabel("行 (row)：", SwingConstants.RIGHT);
+	      JLabel jl1 = new JLabel("行 (row)：", SwingConstants.CENTER);
 	      jl1.setFont(font);
 	      panelInput.add(jl1);
+	      rowText.setHorizontalAlignment(JTextField.LEFT);
 	      panelInput.add(rowText);
 	      rowText.setFont(font);
 	      
 	      JLabel jl2 = new JLabel("列 (column)：", SwingConstants.RIGHT);
 	      jl2.setFont(font);
 	      panelInput.add(jl2);
+	      columnText.setHorizontalAlignment(JTextField.LEFT);;
 	      panelInput.add(columnText);
 	      columnText.setFont(font);
 	      frame.add(BorderLayout.NORTH, panelInput);
@@ -77,21 +80,32 @@ public class TableGenerateUI{
 	      jb.addActionListener(new ActionListener() {
 	          public void actionPerformed(ActionEvent e) {  
 	        	 //先清空文本区
+             	 text.setFont(font);
 	        	 text.setText("");
-	        	 String rowstr = rowText.getText().trim();
-	        	 String columnstr = columnText.getText().trim(); 
-	        	 int row = Integer.parseInt(rowstr);
-	        	 int column = Integer.parseInt(columnstr);
-	             TableGenerate tg = new SimpleTable();
-	 			 ArrayList<String> list = tg.tableWithRowColumn(row, column);
-	 			 text.setFont(font);
-	 			 for (String string : list) {
-	 				 text.append(string + "\n");	
-	             } 
+	        	 //判定不为空
+	        	 if( rowText.getText().trim().length() == 0 || columnText.getText().trim().length() == 0 ) {
+	        		 text.append("出现问题，输入不能为空\n");
+	        	 } else {
+	        		 String rowstr = rowText.getText().trim();
+	        		 String columnstr = columnText.getText().trim(); 
+	        		 try {
+	        			 int row = Integer.parseInt(rowstr);
+	        			 int column = Integer.parseInt(columnstr);
+	        			 TableGenerate tg = new SimpleTable();
+	        			 ArrayList<String> list = tg.tableWithRowColumn(row, column);
+	        			 for (String string : list) {
+	        				 text.append(string + "\n");	
+	        			 } 
+	        		 } catch (Exception el) {
+	        			 //输入不是整数
+	        			 text.append("请确认您输入的整数。");
+	        		 }
+	        	 }
 	         }
 	      }); 
-	       
-	      frame.setSize(1500,1000);
+	      frame.pack();
+//	      frame.setSize(1200,1000);
+	      frame.setResizable(false);
 	      frame.setVisible(true);
 	      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
